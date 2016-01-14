@@ -5,7 +5,7 @@
  - data consistency 
  - fault tolerance 
  - load distribution 
-###Entity Relationship model 
+###Entity Relationship model (ER)
 - what data to store and how to store them.
 - what operation ? 
 - use semantic schema
@@ -32,4 +32,28 @@
 > - "transcript" -> maybe its own entity set ?  (data)
 > - register for courses (actions)
 > - pay for tuition (actions)
+> 
+> **courses** 
+>  data *
+> 
+> - course id 
+> - instructor 
+> - time
+
+####Entity 
+
+Objects distinguished from other objects, has **Attributes** . eg. name of company
+
+**Entity set** : a collection of similar entities (similar to a class) . eg. all students in McGill.
+
+**Hierarchies** : subclasses (is a) (ISA) 
+
+**Relationship** : association among two or more *entity*
+
+- only one edge is possible between two *entities*
+
+eg. company x has sponsored the Liberal Party 
+
+**Relationship set** : collection of similar relationships 
+
 
