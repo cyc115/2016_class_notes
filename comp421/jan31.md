@@ -7,12 +7,10 @@
  1. there can be multiple CK in one table 
  2. each CK can qualify as **primary key**
 
-**Primary key** : a column or a combination of columns that **uniquely identify a record** 
+**Primary key** : a column or a combination of columns that **uniquely identify a record**. May not be null 
 
-1. may not be null 
 
 ```sql
-
 create table students 
 (
 sid char(9) primary key, 
