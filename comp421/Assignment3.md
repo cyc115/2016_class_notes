@@ -5,7 +5,7 @@
 > Sat Apr. 02 2016 
 > 
 > Comp 421 Database 
-> 
+>
 >**TOC**
 >
 >[TOC]
@@ -46,6 +46,7 @@ $$50 \cdot 400 = 20,000 \ data\ tuple$$
 If a data page is not in buffer we have to perform an IO to fetch the page, the resulted page reads is the following :
 
 $$Pr(read) * \#\ of\ tuples$$
+
 $$(1 - (50 / 10,000) ) * 10,000 = 9,950\ reads $$
 
 The check on 'region' can be done at the same time we perform the check on 'size' so no extra IO is required.
