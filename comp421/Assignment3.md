@@ -1,7 +1,11 @@
 > Yuechuan Chen 
+> 
 > 260504371 
+> 
 > Sat Apr. 02 2016 
+> 
 > Comp 421 Database 
+> 
 >**TOC**
 >
 >[TOC]
