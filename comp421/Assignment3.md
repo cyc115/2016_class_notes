@@ -32,7 +32,7 @@ where size > 700 and region = 'POL'
 number of pages due to IO.
 ```
 ####1 No index 
-All tuples needs to be scanned once for the two conditions. 10,000 data page reads : **260 IO**. 
+All tuples needs to be scanned once for the two conditions. 10,000 data page reads : **10,000 IO**. 
 
 ####2 unclustered index on attribute `size`:
 
@@ -42,32 +42,7 @@ All tuples needs to be scanned once for the two conditions. 10,000 data page rea
 
 $$50 \cdot 400 = 20,000 \ data\ tuple$$
 
-20k tuple distributed evenly on 10k pages. there are 50 buffer pages. 
-If a data page is not in buffer we have to perform an IO to fetch the page, the resulted page reads is the following :
-
-$$Pr(read) * \#\ of\ tuples$$
-
-$$(1 - (50 / 10,000) ) * 10,000 = 9,950\ reads $$
-
-The check on 'region' can be done at the same time we perform the check on 'size' so no extra IO is required.
-
-since 'size' is indexed we will also need to include the number of index page reads: 
-
-- per index element we have : 
-    - 50 rid : 10 bytes each 
-    - index of type int : 4 bytes each 
-
-$$50 * 10 + 4 = 504\ bytes\ per\ element$$
-
-assume index is 75 % full and 4,012 bytes per page, we will have 
-
-$$\cfrac{504}{0.75 * 4,012} = 5.97 ~ 6\ elements\ per\ page$$
-
-since there are 1000 elements for the index on 'size' and 6 elements per index page. There will be 166.66 ~ 167 index pages. 
-
-out of the 167 index pages we need to read 40 % of it = 66.8 ~ 67 index pages read. 
-
-Final result is 67 index page reads + 9,950 data page reads = 10,017 reads in total.
+Worst case is that every index tuple need to make a new IO : so 20k IO maximum. 
 
 ####3 Unclustered index on 'region' :
 
@@ -82,14 +57,14 @@ To calculate the total number of IO pages we need to make 1 IO access to the 're
 The tuple will contain 100 rids that we need to check for size > 700 condition. The chance of requesting an data page that is already in buffer is 50 / 10000, much too small to make a difference for only 100 accesses. We will need to make 100 data page IO for this step. 
 
 
-In total, we will make 101 IO accesses, 1 to access the region index and 100 to access each of the corresponding data pages. 
+In total, we will make **101 IO** accesses, 1 to access the region index and 100 to access each of the corresponding data pages. 
 
 
 ####4. unclustred indices on both `size` and `region` :
 
-the idea is to look up both `region` index and `size` index separately and then join the two on `rid`. 
+the idea is to look up both `region` index and `size` index separately and then join the two set on `rid`. 
 
-As said before we need 1 IO access to obtain all tuples with `region = POL`containing 100 rids. Store this page in buffer and load the first 49 of the `(167*0.40) = 67` index pages on size. Find common rids that appears in both the `size` index as well as the `region`index,  and load in the next 18 `size` index page and do the same. This part will cause `1 + 67` IO accesses. After obtaining all `rid` we need to access the data page. Assuming 40% of `region=POL` have `size > 700` (equiprobability)  ,we will need 40 IO. 
+As said before we need 1 IO access to obtain all tuples with `region = POL`which contains **100 rids**. Store this page in buffer and load the first 49 of the `(167*0.40) = 67` index pages on size. Find common rids that appears in both the `size` index as well as the `region`index,  and load in the next 18 `size` index page and do the same. This part will cause `1 + 67` IO accesses. After obtaining all `rid` we need to access the data page. Assuming 40% of `region=POL` have `size > 700` (equiprobability)  ,we will need 40 IO. 
 
 The total number of IO would be `1 + 67 + 40 = 108`, which is slightly more than the io needed if there is only the index on `region`.
 
@@ -246,7 +221,7 @@ and p.country = 'Brazil'
 ```
 
 
-<img src="https://docs.google.com/drawings/d/1OPJHv08qk1KWmyN6fbqk_15gex5Vq2a85maXxvkRwHw/pub?w=1440&amp;h=1080">
+<img src="https://docs.google.com/drawings/d/1OPJHv08qk1KWmyN6fbqk_15gex5Vq2a85maXxvkRwHw/pub?w=993&amp;h=759">
 
 > the number of tuples flow from operator to the next is indicated as subscript. 
 
