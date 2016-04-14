@@ -1,2 +1,95 @@
 #Lecture 23 : Markov Decision Processes 
 
+##markov chain def : 
+
+- set of state `s`
+- transition probability : `T: S X S -> [0,1]`
+	- $$T(s,s') = P(S_{t+1} = S' | S_t = S) $$ 
+- initial state distribution 
+	- $$P_0 : S \rightarrow [0,1]$$
+	- $$P_0(s) = P(S_0) $$
+
+##decision making 
+
+- states do depend on previous state. 
+- `actions` and `rewards` and `state` are distinctive
+	- ![enter image description here](https://lh3.googleusercontent.com/-5s4o9q97Jp8/Vw7MFLFd4PI/AAAAAAAAC0U/RNsL581ceVkI3icJwdtuS1EXhpL1nCY4ACKgB/s0/Selection_171.jpg "Selection_171.jpg")
+	- action : circle 
+	- reward : dimond 
+	- Action : square 
+
+Markov Decision Process 
+- set of states `s`
+- set of actions `A`
+- Transition model : $T: S\times A\times S \rightarrow [0,1]$
+- Reward Function : $R: S\times A \rightarrow R $ (short term utility function ) 
+- Discount Factor $\gamma$ [0,1] , inflation /  agent may die. 
+
+##Planning in MDP 
+- be rational 
+- maximizing expected utility (long term) 
+- maximize immediate utility is not sufficient
+
+##example : Mountain - car 
+
+**States** : position and velocity 
+**Actions** : accelerated forward, backward , const
+**Goal** : get car to the top of the hill as quickly as possible 
+**Reward** : -1 for every time spent. alternative : R = 1 at the top, 0 otherwise. 
+
+
+##policies
+###two types 
+- deterministic : in each state agent chooses a unique action as good option.  **Optimal**
+- stochastic : in the same state , the agent can choose different actions. 
+
+once policy is fixed the mdp becomes a markov chain with reward.
+
+we want to find a policy to maximize the utility. So we want to estimate the expected utility. 
+
+##Value function V(s)
+represent the expected utility for every state, given a certain policy. 
+
+value function of a policy $\pi$ is $$V^{\pi} : S \rightarrow R$$
+
+value of state s under policy $\bf \pi$ : 
+$$V^{\pi}(s) = E_{\pi} [U_t| S_t = s] $$
+
+> ## Bellman equation for evaluating policy 
+> $E_\pi $: expectation of policy $\pi$ 
+> $U_t$ : is the utility function 
+> $\gamma$ is the discount rate
+> $$U_t = R_t + \gamma R_{t+1} + \gamma R_{t+2}  + \gamma R_{t+3} + ... $$  
+> $$ = R_t + \gamma (R_{t+1} +  R_{t+2}  +  R_{t+3} + ... )$$  
+> $$\bf{ = R_t + \gamma U_{t+1} }$$
+> Value function now becomes 
+> $$V^{\pi}(s) = E_{\pi} [U_t| S_t = s]  = E_{\pi} [R_t + \gamma U_{t+1}| S_t = s]  $$ 
+
+> ##Bellman equation in matrix form 
+> $$V^\pi  = R ^\pi + \gamma T^\pi V^\pi$$
+> $V^\pi$ : a vector containing the value of each state under policy $\pi$
+> $R^\pi $ : a vector containing immediate reward at each state $R(s, \pi(s))$
+> $T^\pi $ : a matrix containing the transition probability at each state: $T(s, \pi(s) , s')$
+
+##iterative policy evaluation 
+1. start with initial guess $V_0$ 
+2. do for k iterations : 
+	$V_{k+1}(s) \leftarrow (R(s, \pi(s))  + \gamma \sum_{s' \in S}{T(s,\pi(s) , s') V_k(s')})$
+3. stop when the max change between iterations falls below $\epsilon$ 
+
+$\epsilon = max | V_k - V_{k+1}|$
+
+##policy improvement 
+recall $$\bf{ V^{\pi}(s) \leftarrow \sum_{a \in A} \pi(s,a)  (R(s, a)  + \gamma \sum_{s' \in S}{T(s,a , s') V(s')}) }$$
+
+suppose some action $a^*$ :
+
+$$(R(s, a^*)  + \gamma \sum_{s' \in S}{T(s,a^* , s') V(s')}) \gt V^{\pi} (s)$$
+
+then if we set $\pi(s,a^*) \leftarrow 1$, then the value of state s will increase. 
+
+we can change policy $\pi$ to $\pi^*$ which is **greedy** wrt $V^\pi$. 
+
+$$\pi^*(s) = argmax_{a \in A } (R (s,a) + \gamma \sum_{s' \in S} T(s,a,s') V^{\pi} (s'))$$
+
+search is guaranteed to terminate.
