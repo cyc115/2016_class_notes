@@ -1,6 +1,8 @@
 #Lecture 23 : Markov Decision Processes 
 
-##markov chain def : 
+[TOC]
+
+##Markov Chain:
 
 - set of state `s`
 - transition probability : `T: S X S -> [0,1]`
@@ -9,7 +11,7 @@
 	- $$P_0 : S \rightarrow [0,1]$$
 	- $$P_0(s) = P(S_0) $$
 
-##decision making 
+##decision making with Markov Chain
 
 - states do depend on previous state. 
 - `actions` and `rewards` and `state` are distinctive
@@ -18,16 +20,15 @@
 	- reward : dimond 
 	- Action : square 
 
-Markov Decision Process 
-- set of states `s`
-- set of actions `A`
-- Transition model : $T: S\times A\times S \rightarrow [0,1]$
-- Reward Function : $R: S\times A \rightarrow R $ (short term utility function ) 
-- Discount Factor $\gamma$ [0,1] , inflation /  agent may die. 
+##Markov Decision Process (MDP)
+- set of states $S$
+- set of actions $A$
+- Transition model : $T: S * A * S \in [0,1]$
+- Reward Function : $R: S * A \rightarrow R $ (short term utility function ) 
+- Discount Factor $\gamma \in [0,1]$ 
 
 ##Planning in MDP 
-- be rational 
-- maximizing expected utility (long term) 
+- **maximizing expected utility** (long term) 
 - maximize immediate utility is not sufficient
 
 ##example : Mountain - car 
@@ -36,7 +37,6 @@ Markov Decision Process
 **Actions** : accelerated forward, backward , const
 **Goal** : get car to the top of the hill as quickly as possible 
 **Reward** : -1 for every time spent. alternative : R = 1 at the top, 0 otherwise. 
-
 
 ##policies
 ###two types 
@@ -93,3 +93,82 @@ we can change policy $\pi$ to $\pi^*$ which is **greedy** wrt $V^\pi$.
 $$\pi^*(s) = argmax_{a \in A } (R (s,a) + \gamma \sum_{s' \in S} T(s,a,s') V^{\pi} (s'))$$
 
 search is guaranteed to terminate.
+
+
+
+#What you should know
+• Definition of MDP framework.
+• Differences/similarities between MDPs and other AI approaches
+(e.g. general search, game playing, STRIPS planning).
+•Basic MDP algorithms and their properties:
+– Policy evaluation
+– Policy iteration
+
+##complexity 
+there are two iteration methods :
+
+- value iteration 
+	- each iteration : $O(S^2A)$ down to $O(SA)$ if few successor states 
+	- # iterations : $\frac{1} {1-\gamma}$
+	- faster per iteration 
+- policy iteration 
+	- each iteration $O(S^3 + S^2 A) $ 
+	- # iteratoins $|A|^{|S|} $ 
+	- less iterations 
+
+##Limitations of MDP :
+1. finding opt policy is polynomial states -> does not work for large number of states, solution : 
+	- we can try to use **linear** approximation function for the value function $$V_w(S) = \sum _m W_m \theta_m(S) $$ where $\theta_{1..m} $ are basis features about the state and $W_{1..m}$ is the weight 
+	- train **weights** from data using 
+	- use ANN to calculate **VI** , may not be stable (non linear) 
+2. VI and PI assumes transition and rewards is known 
+3. states is unobservable sometimes 
+	- states may look the same 
+
+
+#lec 25  Reinforcement Learning 
+
+![enter image description here](https://lh3.googleusercontent.com/-TYr5CD1h6S4/VxLbcP8C3tI/AAAAAAAAC3s/wGJIGRkTXYg0brATQVYGCC1ubgsJRTOngCKgB/s0/Selection_173.jpg "Selection_173.jpg")
+
+**Trajectories** : $<s_0 , a_0  , r_0 ,... , s_n , a_n , r_n>$
+
+break the trajectories into tuples $<s_0 , a_0  , r_0> ,... , <s_n , a_n , r_n>$
+ignore dependencies between tuples... each T are independent event. 
+
+##Learning MDP with RL 
+
+###model-based reinforcement learning, MBRL 
+
+1. given a policy for acquiring data. ( random exploration) 
+2. Observe transition pairs $<s,a,r,s>$
+3. learn an **approximate model** : $R(s,a)$ , $T(s,a,s')$ 
+	4. MLE to compute probabilities 
+	5. **supervised learning ** for reward
+6. pretend the approx is correct, use dynamic programming method (value / policy iteration) 
+
+people are not very interested in MBRL. 
+
+###Modelless RL
+
+> ## monte carlo's method  ##
+> - identify a model of the activity
+> - define parameters ( mean , stdiv) for each factor in the model 
+> - create random data according to these parameters 
+> - simulate and analysis 
+
+Agent interacts with environment in trials or episodes that terminates behaving according to some policy $\pi$ , generating several trajectories. 
+
+compute $V^\pi (s) $ by **averaging the observed return** after s on the  
+trajectories in which s was visited
+
+$U_i$ : observed utility from state **s** for the trajectory **i**
+
+$V_{n+1}(s) $ : estimate of the value from state **s** after observing **n+1** trajectories starting at **s**. 
+
+
+![enter image description here](https://lh3.googleusercontent.com/-S3CZZQzry3c/VxLxTVM_III/AAAAAAAAC4c/55Wk9GSLZ_Q1SV2dHZ8BvUnet_GultC_ACKgB/s0/Selection_174.jpg "Selection_174.jpg")
+$\text{A running average ! $\rightarrow$ a gradient}$ 
+
+The **learning rate** version : 
+$$V(s_{t+1}) \leftarrow V(s_t) + \alpha(U(s_t) - V(s_t))$$ 
+
