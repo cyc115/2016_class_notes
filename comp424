@@ -1,6 +1,6 @@
-#Lecture 23 : Markov Decision Processes 
-
+#TOC
 [TOC]
+#Lecture 23 : Markov Decision Processes 
 
 ##Markov Chain:
 
@@ -121,7 +121,7 @@ there are two iteration methods :
 	- we can try to use **linear** approximation function for the value function $$V_w(S) = \sum _m W_m \theta_m(S) $$ where $\theta_{1..m} $ are basis features about the state and $W_{1..m}$ is the weight 
 	- train **weights** from data using 
 	- use ANN to calculate **VI** , may not be stable (non linear) 
-2. VI and PI assumes transition and rewards is known 
+2. VI and PI assumes transition and rewards is known ( solution in lec 25) 
 3. states is unobservable sometimes 
 	- states may look the same 
 
@@ -171,4 +171,62 @@ $\text{A running average ! $\rightarrow$ a gradient}$
 
 The **learning rate** version : 
 $$V(s_{t+1}) \leftarrow V(s_t) + \alpha(U(s_t) - V(s_t))$$ 
+
+##TD learning Algorithm in contrast with monte carlo 
+
+> TD is used to compute values for a given poplcy $\pi$ 
+ 
+> p is a Policy 
+> a is an Action 
+> s is a State 
+> s' is the resulting state 
+> r is the reward of the action at state  
+> take(a,s) : (s', r) take action in state s returns the resulting state and the reward of the action 
+> V(s) : value of state 
+>  Td error : $ \delta \leftarrow  r + \gamma V(s') - V(s) $
+
+	while(! quit) :
+		pick start state s 
+		for t in time_steps:
+			Action a = p(s)
+			(s' , r) = take(a,s)
+			TD_error = r + (deprecation_factor * s'.value - s.value)
+			s.value = s.value + learning_factor * TD_error
+
+
+##Online Gradient descent TD 
+
+	init weight vector of the function approximator w 
+	pick a state s 
+	for t in time_step :
+		Action a = policy(s)
+		(s',r) = take(a,s)
+		td_err = r + depreciation_rate * s'.val - s.val 
+		w = w + learning_rate * td_err * gradient(s.val)
+		s = s'
+		
+##advantage of TD 
+- no model of the environment is required 
+- incremental learning
+- less memory and peak computation required 
+- Both TD and MC converge. 
+- TD learns faster 
+
+
+##RL Algorithms for control 
+The **behaviour policy** ( used to collect data) need to balance between 
+	- **explore** environment 
+	- **exploit** existing knowledge, taking the action that currently seems best 
+
+###$\text{Exploration }\epsilon \text{ greedy} $
+
+**Theory** : to get the opt solution : agent need to try all actions for all states many times... 
+
+**practice** : 
+Pr picking random action : $\epsilon$ , Pr (best action) = $1 - \epsilon$
+$\epsilon = 0.1 $ , decreases over time or the number of times the current state is visited.
+
+
+#Lec 26 Conclusion 
+
 
