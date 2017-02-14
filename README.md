@@ -1,1 +1,1 @@
-# 2016_class_notes
+Notes from McGill university, Winter + fall 2016
