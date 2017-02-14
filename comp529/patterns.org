@@ -1,0 +1,504 @@
+# comp 529 midterm review 
+:TOC:
+
+* requirement
+- critical analysis
+- design recommnedation
+- uml
+
+* structure 
+- 50% definition (short)
+- 30% case study
+- 20% uml 
+* lec 02 
+** reverse engineering 
+- good parts?
+- bad parts
+- improvement?
+* Lec 03 
+** 3 type of architectures 
+- static :: appear on disk 
+  - class 
+  - file
+  - package
+  - import (tree)
+- run-time :: appear in runtime env
+  - memory alloc
+  - object references
+  - client server 
+- management structure :: When will static parts be invoked ?
+
+** architect's task :: corresponding to the types of arch
+  1. static decomposition of system
+     1. id subsystems
+     2. id commuinication path
+     3. determin element's connection technique
+     4. determin how configuration/ deployment/ replacement tech works
+  2. dynamic control relationship
+     1. decide how/what/where data flows
+     2. formate of message passing
+	1. eg. function call
+	2. event driven
+	3. messaging
+  3. Alternative arch
+  4. trade-off analysis
+  5. show all req. (functional and non-functional) mapped to architecture
+
+** architecture styles
+a group of architectures solving the same problem.
+*** style consists of:
+- control-flow rules
+- constraints
+- design patterns
+- definition of elements and connectors
+- runtime properties
+- (un)supported attributes
+
+*** attributes (probably unimportant)
+**** static attributes 
+1. Interoperable :: how info exchange works
+2. extensible
+3. maintain
+4. testable
+5. portable
+6. scalable
+7. flexible
+8. **and shit load**
+
+**** Runtime attributes
+1. available
+2. security
+3. ...
+
+**** Business attributes
+- time to market 
+- cost
+- lifetime
+
+* Lec 04 :: Software Elements & connectors 
+** conn. topology 
+  [[./img/1.jpg]]
+- pattern ? 
+  - popeline
+  - layered
+  - etc.
+
+** types of conn. topology 
+- *static*
+  - layered
+  - flatten
+  - contralized
+  - distributed
+- *dynamic*
+  - callback
+  - multi-threaded
+  - sequential
+  - etc
+ 
+** problem space analysis
+1. separate elements and connectors
+2. define layout topology for ele, conn, and interactions
+3. define semantic behavior
+4. id attribute trade-off
+
+** cohesion :: single task   
+** coupling :: extent of dependency
+
+** elements 
+*** properties
+- api 
+- functional requirement
+- non-functional
+*** element types 
+- static
+  - source
+- run-time 
+  - threads (single/ server/ cluster)
+** connectors
+*** attributes
+    - direction (A-->B)
+    - synchronization (event driven?)
+    - sequence dependence (does methods need to be invoked in a particualr oder?)
+*** runtime properties
+- sync. blocking / non-blocking
+- uni(bi)directional invokation
+- information carrier
+  - variable
+  - environment res (globals)
+  - message ?
+  - method
+- active time 
+  - active / event-driven 
+- fan-out
+  - 1-1: method to method
+  - 1-n: client-server
+- conn. environment 
+  - homogeneous 
+  - heterogeneous : (eg. broker)
+** agile design 
+1. static description
+   1. abstract ele, connector with lines 
+2. dynamic description
+   1. add attrubutes
+3. delay binding
+4. Binding
+[[./img/3.jpg]]
+
+** non-functional requirement :: requirement representing a principle or a quality
+
+* lec 05 :: modeling 
+
+** paradigms 
+*** 1. business lvl
+- use case [behaviour]
+[[./img/8.jpg]]
+- block 
+[[./img/7.jpg]]
+- data flow  [behaviour]
+[[./img/9.jpg]]
+*** 2. architecture lvl
+- domain :: system wide description of program 
+[[./img/6.jpg]]
+- activity  [behaviour]
+[[./img/5.jpg]]
+- class [structure]
+- object [structure]
+- flow chart 
+[[./img/4.jpg]]
+- composit [structure]
+[[./img/10.jpg]]
+- state  [behaviour]
+- sequence  [behaviour]
+*** 3. developer lvl
+- deployment [structure]
+[[./img/11.jpg]]
+- package [structure]
+- component [structure]
+
+
+
+
+** Architecture description language 
+2 forms : 
+1. ACME
+2. predicate calculus 
+
+properties:
+- composition :: describe system as composition of independent components and connectors
+- abstract :: abstract description of each componet's role
+- heterogenity :: a descirption can be a combination of many modeling techniques
+
+* lec 06 :: views
+** view model :: complete simplified description of a system from a perspective
+** 4+1 view model 
+*** scenario view (+1) (business)
+- gather story
+- use-case diagram / requirement 
+*** UI view (business)
+- mock ui 
+*** logical view (architecture) (static) 
+- domain model 
+- class diagram
+*** process view (architecture) (dynamic) 
+- state-machine
+- sequence diagram 
+*** physical view (architecture) 
+- deployment
+- etc
+*** developmen view (sw construction)
+- agile, scrum ...
+- languages, library
+- testing ...
+
+* lec 06 :: design principle : best-practicie within a pradigm
+** OO
+*** open closed principle
+open to extention, closed to modification
+- keep attributes private
+- minimize globals 
+** component based
+- modular
+- portable
+- replaceable
+- reusable set of well defined encapsulated functions exported as a higher-level interface.
+[[./img/12.jpg]]
+** heterogeneous
+
+* archtectural styles 
+- commonly implemented architectures
+- best practices
+- group of related architectures solving a common problem
+
+* 1. Data flow style
+[[./img/13.jpg]]
+   1. series of independent transformation on data by components
+   2. connectors 
+      1. stream
+      2. pipe
+      3. packets
+      4. etc...
+** batch sequential 
+data is batched in a unit 
+eg. compiler 
+*** application:
+- batched data
+- intermediate file is a sequential access *file*
+- subsystems reads and write to file
+*** benefit 
+- simple division of system 
+- subsystem can be stand-alone (low-coupling) == (reusable)
+*** limitations
+- requires external control environment
+- does not provide interactive interface
+- no concurrency
+- high latency
+
+** stream: pipe and filter 
+source -(pipe)-> filter -(pipe)-> sink
+one bite at a time.
+- push :: send info to next step
+- pull :: grab from prev. step
+
+*** application:
+- simple data format
+- producer - consumer related problems
+*** benefit 
+- concurrent
+- reusable
+- modifiable : low coupling btn filter
+- simple
+
+** Process Control
+[[./img/14.jpg]]
+
+*** application:
+- stable rate of output
+*** benefit 
+- embeddable
+  
+* 2. Data centric style
+- centralized data
+- client independent from database
+** repository architecture 
+*** application:
+- passive repo
+- large and complex info systems
+- transaction based comm.
+*** benefit 
+- easy to backup / restore
+- scalable / reusable : add more agents if needed
+*** limitations
+- singular point of failure : database
+- network traffic are alrge for database .
+  
+** blackboard architecture
+[[./img/15.jpg]]
+[[./img/16.jpg]]
+*** application
+- clients subscribe to blackboard which watches the DB
+- *subscription* 
+- open ended 
+- multi-deciplinary problems
+- eg. 
+  - event based
+  - mcv
+
+*** benefit 
+- scalable and concurrent
+- knowledge source reusable
+*** limitations
+- changes to blackboard cascade through system
+- client *synchronization problem*
+- hard to debug
+
+* 3. Hierarchical style 
+- lower level provide services to upper 
+- eg. .NET framework, TCP/IP 
+** Main subroutine - primary secondary archs
+- reuse subroutines
+** Master-slave - primary secondary archs
+- Master is the driver
+- slave initiate activity when ordered to
+  - run independently
+- fault tolerant
+*** benefit 
+- critical reliability
+- speedy consumption of large data set 
+** layered
+[[./img/17.jpg]]
+
+eg. SOAP , HTML
+*** 3 types :
+    1. pure
+       - no cross communication 
+    2. bridge
+       - comm with grand-child
+    3. breach
+       - comm. with ancestor
+
+*** Limitations: 
+    - lower run time
+    - few application domain
+    - breach can causes deadlock
+    - bridge cause tight coupling
+    - eceptions are difficult to handle
+
+* 4. implicit asynchrono
+- publisher - subscriber
+  - observer pattern :: Subject keeps a list of observers and nitify them on subject update
+- producer - consumer
+** non buffered 
+*** application 
+- interactive GUI
+- loose coupling application
+- event handling not predictable
+*** Benefit 
+- off the shelf framework
+- reusable components
+- easy to maintain
+- loose coupling
+- parallel execution possible
+*** limitations 
+- hard to debug
+- overhead
+- reliability of communication 
+** buffered 
+- has a buffer area
+- [[./img/18.jpg]]
+*** application 
+- network
+*** Benefit 
+- Anonymity
+- concurrent
+- scalable
+- batch processing
+- loose coupling
+*** limitations
+- Capacity of the message queue
+- Presentation and data message conversions
+- Complex design and implementation
+[here lec 14 ]
+* 5. Interaction oriented
+** MVC
+*** application
+- best for user interaction
+- modules
+  - data
+  - control
+  - presentation    
+*** Benefit 
+*** limitations
+- not good for real-time machine interfacing
+
+** PAC
+[[./img/364.jpg]]
+*** application
+    - multiple agent and interactive environment
+    - each agent has a PAC
+    - Control comm. with other agents
+*** Benefit
+    - loose agent coupling
+    - divisible to multiple agents
+    - multitasking as individual threads
+    - multi-view
+    - easy to plugin
+    - concurrent
+*** limitations 
+- control overhead
+- comm. bottle neck at controller
+
+** PAC Vs MVC 
+- PAC is layered
+- PAC has dumb presentation component where all the intelligence resides in the Controller module
+- PAC's P and A never talk to each other
+- eg. PAC is Air Traffic Control system
+  - The classic example of a PAC architecture is an air traffic control system. One PAC Agent takes input from a radar system about the location of an incoming 747, and uses the Presentation component to paint a picture of that blip on a canvas (screen). Another Agent independently takes input about a DC-10 that is taking off, and paints that blip to the canvas as well. Still another takes in weather data and paints clouds, while another tracks the incoming enemy bomber and paints a red blip instead. (Er, wait...)
+* 6. Distributed
+** client server architecture
+*** application
+*** Benefit 
+- separation of responsibilities
+- resuable server 
+*** limitations 
+- security complicated due to packets
+- testability
+- fat clients
+** multi-tired arch
+[[./img/365.jpg][3 tired example]]
+
+*** application
+*** Benefit
+- reusable
+- scalable
+  - reduce network traffic
+- reliable
+*** limitations 
+- slow / non-responsive
+** broker (proxy)
+[[./img/366.jpg]]
+*** types 
+**** network
+connect components together : TCP/IP
+**** bridge 
+broker communicating with 2 registered brokers 
+
+*** Benefit 
+- middleware abstract and manage communication
+- better decoupling
+- easy to change and extend (it's component based)
+- server portable
+- runtime changable
+*** limitations 
+- proxy overhead
+- low Fault tolerent
+- proxy hard to test
+** service oriented arch
+*** application
+[[./img/367.jpg]]
+- business process via API (JSON or SOAP)
+- messaging via request-response
+- client request a service from a directory. eg. old telephone company 
+*** benefit
+- loose coupling
+- reusable
+- scalable
+*** limitation
+- overhead
+- reliable
+* 7. security
+** silo strategy
+a wall blocking access.
+** ringed srch
+[[./img/368.jpg]]
+** ticket arch
+[[./img/368.jpg]]
+** object arch
+linux rwx permission system
+** encryption arch
+** networked arch
+
+* 8. heterogeneous
+* 9. product line
+
+* reverse engineering techniques 
+- proof by reconstruction
+- proff by contradiction
+- steps (PbC):
+  1. assumed architecture
+  2. Procedure :: study application for the purpose of disproving your assumed architecture
+  3. outside analysis
+  4. inside analysis
+  5. conclusion
+
+
+1. 
+   1. style are widely accepted implementation methods to tackle a problem. It make our implementation easier to understand
+
+* diagrams
+** deployment 
+[[./img/deployment-example-web-application.png]]
+** activity 
+[[./img/activityDiagramEnroll.JPG]]
+** state-machine 
+[[./img/stateMachineSeminarRegistration.jpg]]
+
